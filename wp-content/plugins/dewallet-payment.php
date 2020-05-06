@@ -100,6 +100,7 @@ function dewallet_init_gateway_class() {
 		}
  
 		public function process_payment( $order_id ) {
+            $order 	= wc_get_order( $order_id );
   			// we received the payment
 			$order->payment_complete();
 			$order->reduce_order_stock();
