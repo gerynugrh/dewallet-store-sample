@@ -82,16 +82,9 @@ function dewallet_init_gateway_class() {
             if ( $this->description ) {
                 echo wpautop( wp_kses_post( $this->description ) );
             }
-
-            $this->data = array(
-                'publicKey' => $this->public_key
-            );
-            
-            $encoded_json = json_encode($this->data);
-            $url = urlencode($encoded_json);
         
             echo '<div class="form-row form-row-wide"><label>Username <span class="required">*</span></label>
-            <input id="misha_ccNo" type="text" autocomplete="off">
+            <input id="username" type="text" autocomplete="off">
             </div>
             <div class="clear"></div>';
 		}
@@ -101,7 +94,11 @@ function dewallet_init_gateway_class() {
 	 	}
  
 		public function validate_fields() {
-  
+            if( empty( $_POST[ 'username' ]) ) {
+                wc_add_notice(  'First name is required!', 'error' );
+                return false;
+            }
+            return true;
 		}
  
 		public function process_payment( $order_id ) {
