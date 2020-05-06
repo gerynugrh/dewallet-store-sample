@@ -100,6 +100,7 @@ function dewallet_init_gateway_class() {
 		}
  
 		public function process_payment( $order_id ) {
+            global $woocommerce;
             $order 	= wc_get_order( $order_id );
   			// we received the payment
 			$order->payment_complete();
