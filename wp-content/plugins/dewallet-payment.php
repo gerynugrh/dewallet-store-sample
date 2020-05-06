@@ -94,10 +94,6 @@ function dewallet_init_gateway_class() {
 	 	}
  
 		public function validate_fields() {
-            if( empty( $_POST[ 'username' ]) ) {
-                wc_add_notice(  'First name is required!', 'error' );
-                return false;
-            }
             return true;
 		}
  
