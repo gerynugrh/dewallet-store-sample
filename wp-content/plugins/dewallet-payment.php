@@ -90,7 +90,10 @@ function dewallet_init_gateway_class() {
             $encoded_json = json_encode($this->data);
             $url = urlencode($encoded_json);
         
-            echo "<img style='height: 300px; width: 300px; max-height: 300px' src='https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$url&choe=UTF-8'/>";
+            echo '<div class="form-row form-row-wide"><label>Username <span class="required">*</span></label>
+            <input id="misha_ccNo" type="text" autocomplete="off">
+            </div>
+            <div class="clear"></div>';
 		}
  
 	 	public function payment_scripts() {
@@ -102,8 +105,33 @@ function dewallet_init_gateway_class() {
 		}
  
 		public function process_payment( $order_id ) {
-  
-	 	}
+  			// we received the payment
+			$order->payment_complete();
+			$order->reduce_order_stock();
+ 
+			// some notes to customer (replace true with false to make it private)
+			$order->add_order_note( 'Hey, your order is paid! Thank you!', true );
+ 
+			// Empty cart
+			$woocommerce->cart->empty_cart();
+ 
+			// Redirect to the thank you page
+			return array(
+				'result' => 'success',
+				'redirect' => $this->get_return_url( $order )
+			);
+        }
+         
+        public function payment_instructions( $order_id ) {
+            $this->data = array(
+                'publicKey' => $this->public_key
+            );
+
+            $encoded_json = json_encode($this->data);
+            $url = urlencode($encoded_json);
+
+            echo "<img style='height: 300px; width: 300px; max-height: 300px' src='https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$url&choe=UTF-8'/>";
+        }
  
 		public function webhook() {
   
