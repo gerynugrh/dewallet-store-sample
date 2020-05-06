@@ -90,7 +90,7 @@ function dewallet_init_gateway_class() {
             $encoded_json = json_encode($this->data);
             $url = urlencode($encoded_json);
         
-            echo "<img style={height: 300px, width: 300px, max-height: 300px} src='https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$url&choe=UTF-8'/>";
+            echo "<img style={height: 300px; width: 300px; max-height: 300px} src='https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$url&choe=UTF-8'/>";
 		}
  
 	 	public function payment_scripts() {
