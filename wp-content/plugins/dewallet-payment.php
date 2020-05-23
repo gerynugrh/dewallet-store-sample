@@ -120,8 +120,17 @@ function dewallet_init_gateway_class() {
         }
          
         public function payment_instructions( $order_id ) {
+            $total;
+            $order = wc_get_order($order_id);
+
+            foreach ($order->get_items() as $item_key => $item) {
+                $total += $item->get_total();
+            }
+
             $this->data = array(
-                'publicKey' => $this->public_key
+                'publicKey' => $this->public_key,
+                'order_id' => $order_id,
+                'total' => $total
             );
 
             $encoded_json = json_encode($this->data);
