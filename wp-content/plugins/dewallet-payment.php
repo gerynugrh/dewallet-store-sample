@@ -85,8 +85,9 @@ function dewallet_init_gateway_class() {
                 echo wpautop( wp_kses_post( $this->description ) );
             }
         
-            echo '<div class="form-row form-row-wide"><label>Username <span class="required">*</span></label>
-            <input id="username" type="text" autocomplete="off">
+            echo '<div class="form-row form-row-wide">
+            <p>Untuk membayar menggunakan UangKita silahkan scan barcode di akhir proses pembelian menggunakan
+            aplikasi yang terdapat pada handphonemu</p>
             </div>
             <div class="clear"></div>';
 		}
