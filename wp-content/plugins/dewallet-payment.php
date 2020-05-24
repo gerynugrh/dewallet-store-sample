@@ -67,7 +67,8 @@ function dewallet_init_gateway_class() {
                     'title'       => 'Description',
                     'type'        => 'textarea',
                     'description' => 'This controls the description which the user sees during checkout.',
-                    'default'     => 'Bayar menggunakan dompet UangKita',
+                    'default'     => 'Untuk membayar menggunakan UangKita silahkan scan barcode di akhir proses pembelian menggunakan
+                    aplikasi yang terdapat pada handphonemu',
                 ),
                 'public_key' => array(
                     'title'       => 'Stellar Public Key',
@@ -84,12 +85,6 @@ function dewallet_init_gateway_class() {
             if ( $this->description ) {
                 echo wpautop( wp_kses_post( $this->description ) );
             }
-        
-            echo '<div class="form-row form-row-wide">
-            <p>Untuk membayar menggunakan UangKita silahkan scan barcode di akhir proses pembelian menggunakan
-            aplikasi yang terdapat pada handphonemu</p>
-            </div>
-            <div class="clear"></div>';
 		}
  
 	 	public function payment_scripts() {
