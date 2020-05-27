@@ -46,7 +46,7 @@ function dewallet_init_gateway_class() {
             // We need custom JavaScript to obtain a token
             add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
 
-			add_action('woocommerce_api_confirm-uangkita', array($this, 'webhook'));
+			add_action('woocommerce_api_wc_gateway_uangkita', array($this, 'webhook'));
 
             add_action('woocommerce_thankyou_' . $this->id, 
 				array($this, 'payment_instructions')
