@@ -39,12 +39,18 @@ function dewallet_init_gateway_class() {
             $this->public_key = $this->get_option( 'public_key' );
          
             // This action hook saves the settings
-            add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+            add_action('woocommerce_update_options_payment_gateways_' . $this->id, 
+				array($this, 'process_admin_options')
+			);
          
             // We need custom JavaScript to obtain a token
-            add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
+            add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
 
-            add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'payment_instructions' ) );
+			add_action('woocommerce_api_confirm-uangkita', array($this, 'webhook'));
+
+            add_action('woocommerce_thankyou_' . $this->id, 
+				array($this, 'payment_instructions')
+			);
  		}
  
  		public function init_form_fields(){
@@ -126,18 +132,29 @@ function dewallet_init_gateway_class() {
             $this->data = array(
                 'publicKey' => $this->public_key,
                 'order_id' => $order_id,
-                'total' => $total
+                'total' => $total,
+				'webhook' => get_home_url() . "/wc-api/confirm-uangkita"
             );
 
             $encoded_json = json_encode($this->data);
             $url = urlencode($encoded_json);
 
             echo "<h2>Lakukan pembayaran dengan melakukan scan pada kode ini</h2>";
-            echo "<img style='height: 300px; width: 300px; max-height: 300px' src='https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$url&choe=UTF-8'/>";
+            echo "
+				<img 
+					style='height: 300px; width: 300px; max-height: 300px' 
+					src='https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$url&choe=UTF-8'/>
+			";
         }
  
 		public function webhook() {
-  
+  			$order = wc_get_order($_POST['orderId']);
+			$transaction_id = $_POST['transactionId'];
+
+			$order->payment_complete();
+			$order->reduce_order_stock();
+
+			update_options('webhook_debug', $_POST);
 	 	}
  	}
 }
