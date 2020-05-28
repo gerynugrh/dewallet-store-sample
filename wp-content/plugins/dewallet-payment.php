@@ -127,9 +127,10 @@ function dewallet_init_gateway_class() {
 
             $this->data = array(
                 'publicKey' => $this->public_key,
-                'order_id' => $order_id,
+                'name' => get_bloginfo('name'),
+                'orderId' => $order_id,
                 'total' => $total,
-				'webhook' => get_home_url() . "/wc-api/confirm-uangkita"
+				'webhook' => get_home_url()
             );
 
             $encoded_json = json_encode($this->data);
@@ -148,22 +149,87 @@ function dewallet_init_gateway_class() {
 			$transaction_hash = $_POST['transaction'];
 
 			$horizon = "http://34.87.91.78:8000";
-			$transaction_url = $horizon . "/transactions";
+			$transaction_url = $horizon . "/transactions/";
 			$url = $transaction_url . $transaction_hash . "/effects";
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			$output = $curl_exec($ch);
+			$output = curl_exec($ch);
+            curl_close($ch);
 
-			echo $output;
+            $response = json_decode($output);
+            $records = $response->_embedded->records;
 
-			curl_close($ch);
+            $desintation;
+            $amount;
 
-			// $order->payment_complete();
-			// $order->reduce_order_stock();
+            foreach ($records as $record) {
+                if ($record->type == "account_credited") {
+                    $destination = $record->account;
+                    $str_amount = $record->amount;
 
-			// update_option('webhook_debug', $_POST);
+                    $amount = intval(explode('.', $str_amount)[0]);
+                }
+            }
+
+            if ($destination !== $this->public_key) {
+                $res = array(
+                    'success' => false,
+                    'status' => "no_match_destination",
+                    'message' => "Destination didn't match"
+                );
+                echo json_encode($res);
+                exit();
+            }
+
+            foreach ($order->get_items() as $item_key => $item) {
+                $total += $item->get_total();
+            }
+
+            if ($amount !== $total) {
+                $res = array(
+                    'success' => false,
+                    'status' => "no_match_amount",
+                    'message' => "Amount of money doesn't match"
+                );
+                echo json_encode($res);
+                exit();
+            }
+
+            $ch2 = curl_init();
+			curl_setopt($ch2, CURLOPT_URL, "" . $transaction_url . $transaction_hash);
+			curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
+			$output = curl_exec($ch2);
+            curl_close($ch2);
+
+            $response = json_decode($output);
+            $str_order = $response->memo;
+
+            $order_no = explode(": ", $str_order)[1];
+
+            if ($order_no !== $_POST["orderId"]) {
+                $res = array(
+                    'success' => false,
+                    'status' => "order_not_match",
+                    'orderId' => $str_order,
+                    'message' => "Order id in memo doesn't match"
+                );
+                echo json_encode($res);
+                exit();
+            }
+
+            $res = array(
+                'success' => true,
+                'status' => "payment_completed",
+                'message' => "Payment completed"
+            );
+
+            $order->payment_complete();
+			$order->reduce_order_stock();
+            
+            echo json_encode($res);
+            exit();
 	 	}
  	}
 }
