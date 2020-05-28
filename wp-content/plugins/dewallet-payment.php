@@ -104,12 +104,8 @@ function dewallet_init_gateway_class() {
 		public function process_payment( $order_id ) {
             global $woocommerce;
             $order 	= wc_get_order( $order_id );
-  			// we received the payment
-			$order->payment_complete();
-			$order->reduce_order_stock();
- 
 			// some notes to customer (replace true with false to make it private)
-			$order->add_order_note( 'Hey, your order is paid! Thank you!', true );
+			$order->add_order_note('Hey, we already receive your order!', true);
  
 			// Empty cart
 			$woocommerce->cart->empty_cart();
@@ -154,7 +150,7 @@ function dewallet_init_gateway_class() {
 			$order->payment_complete();
 			$order->reduce_order_stock();
 
-			update_options('webhook_debug', $_POST);
+			update_option('webhook_debug', $_POST);
 	 	}
  	}
 }
