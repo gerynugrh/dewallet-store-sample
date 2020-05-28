@@ -145,12 +145,25 @@ function dewallet_init_gateway_class() {
  
 		public function webhook() {
   			$order = wc_get_order($_POST['orderId']);
-			$transaction_id = $_POST['transactionId'];
+			$transaction_hash = $_POST['transaction'];
 
-			$order->payment_complete();
-			$order->reduce_order_stock();
+			$horizon = "http://34.87.91.78:8000";
+			$transaction_url = $horizon . "/transactions";
+			$url = $transaction_url . $transaction_hash . "/effects";
 
-			update_option('webhook_debug', $_POST);
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			$output = $curl_exec($ch);
+
+			echo $output;
+
+			curl_close($ch);
+
+			// $order->payment_complete();
+			// $order->reduce_order_stock();
+
+			// update_option('webhook_debug', $_POST);
 	 	}
  	}
 }
